@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 
-export default function AboutPage() {
+export default function Home() {
   return (
     <div className="min-h-screen bg-black/[0.96] antialiased bg-grid-white/[0.02]">
       {/* Header with results page styling */}
@@ -24,8 +24,8 @@ export default function AboutPage() {
         </div>
       </div>
 
-      {/* Original content with container styling */}
-      <div className="container mx-auto px-6 py-8">
+      {/* Original content exactly as provided */}
+      <main className="min-h-screen bg-black/[0.96] antialiased bg-grid-white/[0.02] relative overflow-hidden">
         {/* Ambient background with moving particles */}
         <div className="h-full w-full absolute inset-0 z-0">
 
@@ -35,7 +35,7 @@ export default function AboutPage() {
           <Navbar />
           <Hero />
         </div>
-      </div>
+      </main>
     </div>
   )
 }
