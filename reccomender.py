@@ -29,7 +29,7 @@ class CourseRecommender:
             # Load pre-computed embeddings (lightning fast!)
             if 'embedding' in data and data['embedding']:
                 self.embeddings[course_code] = np.array(data['embedding'])
-                print(f"⚡ Loaded embedding for {course_code}")
+                print(f"⚡ Loaded {len(data['embedding'])}-dim embedding for {course_code}")
     
     def get_embedding_info(self) -> dict:
         """Get information about loaded embeddings"""
@@ -74,7 +74,9 @@ class CourseRecommender:
             
             # Smart filtering and scoring
             candidates = []
-            print(f"🔍 Analyzing {len(all_codes)} courses with embeddings...")
+            print(f"🔍 Analyzing {len(all_codes)} courses with pre-computed embeddings...")
+            print(f"🧠 User profile embedding shape: {profile_embedding.shape}")
+            print(f"📊 Course embeddings matrix shape: {all_embs.shape}")
             
             for i, course_code in enumerate(all_codes):
                 if course_code in valid_completed:
@@ -91,11 +93,11 @@ class CourseRecommender:
                     
                 # No difficulty filtering - let users choose their own challenge level
                 
-                # Combine similarity with course quality metrics (emphasize easiness!)
+                # Combine similarity with course quality metrics (HEAVY easiness emphasis!)
                 similarity_score = similarities[i]
                 
-                # Quality score: 40% liked + 40% easiness + 20% usefulness
-                quality_score = (0.4 * liked_pct + 0.4 * easy_pct + 0.2 * useful_pct) / 100
+                # Quality score: 25% liked + 65% easiness + 10% usefulness
+                quality_score = (0.25 * liked_pct + 0.65 * easy_pct + 0.1 * useful_pct) / 100
                 
                 # Weighted final score
                 final_score = 0.7 * similarity_score + 0.3 * quality_score
@@ -141,9 +143,9 @@ class CourseRecommender:
                 useful_pct = info.get('useful_percentage') or 50
                 easy_pct = info.get('easy_percentage') or 50
                 
-                if liked_pct >= 50 and easy_pct >= 60:  # Focus on easiness in fallback too
-                    # Quality score: 40% liked + 50% easiness + 10% usefulness  
-                    quality_score = (0.4 * liked_pct + 0.5 * easy_pct + 0.1 * useful_pct) / 100
+                if liked_pct >= 50 and easy_pct >= 70:  # Even higher easiness threshold!
+                    # Quality score: 20% liked + 75% easiness + 5% usefulness  
+                    quality_score = (0.2 * liked_pct + 0.75 * easy_pct + 0.05 * useful_pct) / 100
                     quality_courses.append((course_code, quality_score, info))
             
             # Sort by quality and get top 5
