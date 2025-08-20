@@ -4,33 +4,44 @@ from typing import List, Tuple
 def extract_courses_separate_lists(text: str) -> Tuple[List[str], List[str]]:
     """
     Extract course codes and numbers from transcript text.
+    Uses the proven method that looks for "Course" sections.
     Returns (course_codes, course_numbers) as separate lists.
     """
-    # Common course code patterns (e.g., CS, MATH, ENGL, etc.)
-    course_pattern = r'\b([A-Z]{2,4})\s*(\d{3}[A-Z]?)\b'
-    
-    matches = re.findall(course_pattern, text.upper())
+    print(f"🔍 Looking for Course sections in transcript...")
     
     course_codes = []
     course_numbers = []
+
+    # Find all "Course" sections - this is the key pattern from your working script
+    course_sections = re.findall(r'Course\s*(.*?)(?=Description|Term GPA|Grade|$)', text, re.DOTALL)
     
-    for code, number in matches:
-        course_codes.append(code)
-        course_numbers.append(number)
+    print(f"📚 Found {len(course_sections)} Course sections")
+
+    for i, section in enumerate(course_sections):
+        print(f"🔍 Processing section {i+1}: {section[:50]}...")
+        
+        lines = [line.strip() for line in section.split('\n') if line.strip()]
+
+        for line in lines:
+            # Check if it's a department code (2-5 uppercase letters only)
+            if re.match(r'^[A-Z]{2,5}$', line):
+                course_codes.append(line)
+                print(f"  📖 Found course code: {line}")
+            # Check if it's a course number (digits + optional letters only)
+            elif re.match(r'^\d+[A-Z]*$', line):
+                course_numbers.append(line)
+                print(f"  🔢 Found course number: {line}")
+
+    print(f"✅ Total course codes found: {len(course_codes)}")
+    print(f"✅ Total course numbers found: {len(course_numbers)}")
     
-    # Remove duplicates while preserving order
-    seen_courses = set()
-    unique_codes = []
-    unique_numbers = []
-    
-    for i, (code, number) in enumerate(zip(course_codes, course_numbers)):
-        full_course = code + number
-        if full_course not in seen_courses:
-            seen_courses.add(full_course)
-            unique_codes.append(code)
-            unique_numbers.append(number)
-    
-    return unique_codes, unique_numbers
+    # Create full course list for verification
+    if course_codes and course_numbers:
+        min_length = min(len(course_codes), len(course_numbers))
+        sample_courses = [course_codes[i] + course_numbers[i] for i in range(min(5, min_length))]
+        print(f"📚 Sample full courses: {sample_courses}")
+
+    return course_codes, course_numbers
 
 def extract_courses_full_codes(text: str) -> List[str]:
     """

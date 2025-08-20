@@ -86,6 +86,9 @@ async def upload_pdf(file: UploadFile = File(...)):
             from pdfminer.high_level import extract_text
             extracted_text = extract_text(temp_file_path)
             
+            print(f"📄 Extracted text length: {len(extracted_text)}")
+            print(f"📝 Sample text: {extracted_text[:200]}...")
+            
             course_codes, course_numbers = extract_courses_separate_lists(extracted_text)
             
             full_courses = []
