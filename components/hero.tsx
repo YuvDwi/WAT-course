@@ -7,6 +7,7 @@ import FloatingPaper from "@/components/floating-paper"
 import RoboAnimation from "@/components/robo-animation"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 
 export default function Hero() {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false)
@@ -62,10 +63,12 @@ export default function Hero() {
               <FileText className="mr-2 h-5 w-5" />
               Upload Transcript
             </Button>
-            <Button size="lg" variant="outline" className="text-white border-custom-yellow hover:bg-custom-yellow/20">
-              <Sparkles className="mr-2 h-5 w-5" />
-              How it works
-            </Button>
+            <Link href="/results/aboutpage">
+              <Button size="lg" variant="outline" className="text-white border-custom-yellow hover:bg-custom-yellow/20">
+                <Sparkles className="mr-2 h-5 w-5" />
+                How it works
+              </Button>
+            </Link>
           </motion.div>
         </div>
       </div>
