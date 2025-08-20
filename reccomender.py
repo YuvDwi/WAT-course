@@ -106,11 +106,42 @@ class CourseRecommender:
             
             print(f"✅ Found {len(candidates)} valid candidates after filtering")
             
-            # Sort by score and get top 5
+            # Sort by score
             candidates.sort(key=lambda x: x[1], reverse=True)
-            top_5 = candidates[:5]
             
-            print(f"🎯 Returning top {len(top_5)} recommendations")
+            # Add diversity: prefer different departments
+            diverse_recommendations = []
+            used_departments = set()
+            
+            print(f"🌈 Applying diversity filtering...")
+            
+            # First pass: get one course from each department
+            for course_code, score, info in candidates:
+                dept = course_code[:2] if len(course_code) >= 2 else course_code  # CS, MATH, etc.
+                if dept not in used_departments and len(diverse_recommendations) < 5:
+                    diverse_recommendations.append((course_code, score, info))
+                    used_departments.add(dept)
+                    print(f"  ✅ Added {course_code} (dept: {dept})")
+            
+            # Second pass: fill remaining slots if we don't have 5
+            for course_code, score, info in candidates:
+                if len(diverse_recommendations) >= 5:
+                    break
+                # Add if not already in recommendations
+                if not any(rec[0] == course_code for rec in diverse_recommendations):
+                    diverse_recommendations.append((course_code, score, info))
+                    print(f"  ➕ Added {course_code} (additional)")
+            
+            top_5 = diverse_recommendations[:5]
+            
+            print(f"🎯 Returning {len(top_5)} diverse recommendations")
+            
+            # Show department spread
+            dept_spread = {}
+            for course_code, _, _ in top_5:
+                dept = course_code[:2] if len(course_code) >= 2 else course_code
+                dept_spread[dept] = dept_spread.get(dept, 0) + 1
+            print(f"📊 Department spread: {dept_spread}")
             
             # Format recommendations
             recommendations = []
