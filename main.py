@@ -54,10 +54,7 @@ async def recommend_from_courses(request: CourseRequest):
     except Exception as e:
         return {"error": f"Error getting recommendations: {str(e)}", "recommendations": []}
 
-@app.options("/upload-pdf")
-async def upload_pdf_options():
-    print("🔄 Received OPTIONS request for /upload-pdf")
-    return {"message": "OK"}
+# Removed manual OPTIONS handler - let CORS middleware handle it automatically
 
 @app.get("/")
 async def root():
