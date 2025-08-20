@@ -142,12 +142,17 @@ function UploadModal({ onClose }: { onClose: () => void }) {
         body: formData,
       })
 
+      console.log('🔍 Response status:', response.status)
+      console.log('🔍 Response headers:', response.headers)
+      
+      const responseText = await response.text()
+      console.log('🔍 Raw response:', responseText)
+
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Upload failed')
+        throw new Error(`Upload failed: ${response.status} - ${responseText}`)
       }
 
-      const result = await response.json()
+      const result = JSON.parse(responseText)
       
       // Transform Python API response to match our frontend expectations
       const analysisResults = {
