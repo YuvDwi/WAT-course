@@ -6,9 +6,11 @@ import { FileText, Sparkles, Upload, X } from "lucide-react"
 import FloatingPaper from "@/components/floating-paper"
 import RoboAnimation from "@/components/robo-animation"
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 
 export default function Hero() {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false)
+  const router = useRouter()
 
   return (
     <div className="relative min-h-[calc(100vh-76px)] flex items-center">
@@ -73,14 +75,14 @@ export default function Hero() {
 
       {/* Upload Modal */}
       {isUploadModalOpen && (
-        <UploadModal onClose={() => setIsUploadModalOpen(false)} />
+        <UploadModal onClose={() => setIsUploadModalOpen(false)} router={router} />
       )}
     </div>
   )
 }
 
 // Upload Modal Component
-function UploadModal({ onClose }: { onClose: () => void }) {
+function UploadModal({ onClose, router }: { onClose: () => void, router: any }) {
   const [isDragOver, setIsDragOver] = useState(false)
   const [files, setFiles] = useState<File[]>([])
   const [isUploading, setIsUploading] = useState(false)
@@ -164,7 +166,10 @@ function UploadModal({ onClose }: { onClose: () => void }) {
         totalRecommendations: result.total_recommendations || 0
       }
       
-      setAnalysisResults(analysisResults)
+      // Store results in sessionStorage and navigate to results page
+      sessionStorage.setItem('analysisResults', JSON.stringify(analysisResults))
+      onClose()
+      router.push('/results')
     } catch (error) {
       console.error('Upload error:', error)
       setUploadError(error instanceof Error ? error.message : 'Upload failed. Please try again.')
@@ -189,136 +194,10 @@ function UploadModal({ onClose }: { onClose: () => void }) {
           </button>
         </div>
 
-        {/* Analysis Results */}
-        {analysisResults && (
-          <div className="space-y-6">
-            <div className="bg-green-900/20 border border-green-700 rounded-lg p-4">
-              <h3 className="text-green-400 font-medium mb-2">Analysis Complete!</h3>
-              <p className="text-gray-300">
-                Processed {analysisResults.filesProcessed} file(s) with {analysisResults.totalPages} estimated pages.
-                Found {analysisResults.totalCoursesFound} courses in your transcript.
-              </p>
-            </div>
 
-            <div className="grid md:grid-cols-2 gap-6">
-              {/* Extracted Courses */}
-              <div className="bg-gray-800 rounded-lg p-4">
-                <h4 className="text-white font-medium mb-3">Courses Found in Transcript</h4>
-                {analysisResults.extractedCourses && analysisResults.extractedCourses.length > 0 ? (
-                  <div className="space-y-2 max-h-48 overflow-y-auto">
-                    {analysisResults.extractedCourses.map((course: string, index: number) => (
-                      <div key={index} className="text-blue-400 flex items-center">
-                        <span className="w-2 h-2 bg-blue-400 rounded-full mr-2"></span>
-                        {course}
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-gray-400 text-sm">No courses detected in transcript</p>
-                )}
-              </div>
 
-              {/* Recommendation Stats */}
-              <div className="bg-gray-800 rounded-lg p-4">
-                <h4 className="text-white font-medium mb-3">Recommendation Stats</h4>
-                <div className="space-y-2">
-                  <div className="text-gray-300 flex justify-between">
-                    <span>Total Recommendations:</span>
-                    <span className="text-custom-yellow">{analysisResults.totalRecommendations}</span>
-                  </div>
-                  <div className="text-gray-300 flex justify-between">
-                    <span>Courses Analyzed:</span>
-                    <span className="text-green-400">{analysisResults.totalCoursesFound}</span>
-                  </div>
-                  <div className="text-gray-300 flex justify-between">
-                    <span>Matching Algorithm:</span>
-                    <span className="text-blue-400">ML-Powered</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Recommended Courses */}
-            <div className="bg-gray-800 rounded-lg p-4">
-              <h4 className="text-white font-medium mb-3">
-                Recommended Courses ({analysisResults.totalRecommendations})
-              </h4>
-              {analysisResults.recommendations && analysisResults.recommendations.length > 0 ? (
-                <div className="space-y-3">
-                  {analysisResults.recommendations.map((rec: any, index: number) => (
-                    <div key={index} className="bg-gray-700 rounded-lg p-4">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-2">
-                            <h5 className="text-custom-yellow font-medium text-lg">{rec.course_code}</h5>
-                            <span className="bg-green-900/30 text-green-400 px-2 py-1 rounded text-xs">
-                              Score: {(rec.score * 100).toFixed(1)}%
-                            </span>
-                          </div>
-                          
-                          {rec.course_info && (
-                            <div className="space-y-2">
-                              {rec.course_info.course_description && (
-                                <p className="text-gray-300 text-sm">
-                                  {rec.course_info.course_description}
-                                </p>
-                              )}
-                              
-                              <div className="flex gap-4 text-xs">
-                                {rec.course_info.liked_percentage && (
-                                  <span className="text-green-400">
-                                    👍 {rec.course_info.liked_percentage}% liked
-                                  </span>
-                                )}
-                                {rec.course_info.useful_percentage && (
-                                  <span className="text-blue-400">
-                                    💡 {rec.course_info.useful_percentage}% useful
-                                  </span>
-                                )}
-                                {rec.course_info.easy_percentage && (
-                                  <span className="text-orange-400">
-                                    📚 {rec.course_info.easy_percentage}% easy
-                                  </span>
-                                )}
-                              </div>
-
-                              {rec.course_info.url && (
-                                <a 
-                                  href={rec.course_info.url} 
-                                  target="_blank" 
-                                  rel="noopener noreferrer"
-                                  className="text-custom-yellow hover:text-custom-yellow/80 text-sm underline"
-                                >
-                                  View Course Details →
-                                </a>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-gray-400 text-sm">
-                  No recommendations available. Make sure your transcript contains recognizable course codes.
-                </p>
-              )}
-            </div>
-
-            <div className="flex justify-end">
-              <Button
-                onClick={onClose}
-                className="bg-custom-yellow hover:bg-custom-yellow/80 text-black font-medium"
-              >
-                Close
-              </Button>
-            </div>
-          </div>
-        )}
-
-        {/* Upload Interface - shown when no results */}
-        {!analysisResults && (
+        {/* Upload Interface */}
+        {(true) && (
           <>
             {/* Error Message */}
             {uploadError && (
