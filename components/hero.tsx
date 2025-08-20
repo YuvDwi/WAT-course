@@ -63,7 +63,7 @@ export default function Hero() {
               <FileText className="mr-2 h-5 w-5" />
               Upload Transcript
             </Button>
-            <Link href="/results/aboutpage">
+            <Link href="/about">
               <Button size="lg" variant="outline" className="text-white border-custom-yellow hover:bg-custom-yellow/20">
                 <Sparkles className="mr-2 h-5 w-5" />
                 How it works
