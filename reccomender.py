@@ -96,8 +96,8 @@ class CourseRecommender:
                 # Combine similarity with course quality metrics (HEAVY easiness emphasis!)
                 similarity_score = similarities[i]
                 
-                # Quality score: 25% liked + 65% easiness + 10% usefulness
-                quality_score = (0.25 * liked_pct + 0.65 * easy_pct + 0.1 * useful_pct) / 100
+                # Quality score: 40% liked + 30% easiness + 30% usefulness (balanced)
+                quality_score = (0.4 * liked_pct + 0.3 * easy_pct + 0.3 * useful_pct) / 100
                 
                 # Weighted final score
                 final_score = 0.7 * similarity_score + 0.3 * quality_score
@@ -174,9 +174,9 @@ class CourseRecommender:
                 useful_pct = info.get('useful_percentage') or 50
                 easy_pct = info.get('easy_percentage') or 50
                 
-                if liked_pct >= 50 and easy_pct >= 70:  # Even higher easiness threshold!
-                    # Quality score: 20% liked + 75% easiness + 5% usefulness  
-                    quality_score = (0.2 * liked_pct + 0.75 * easy_pct + 0.05 * useful_pct) / 100
+                if liked_pct >= 50 and easy_pct >= 60:  # Reasonable quality threshold
+                    # Quality score: 40% liked + 30% easiness + 30% usefulness (balanced)
+                    quality_score = (0.4 * liked_pct + 0.3 * easy_pct + 0.3 * useful_pct) / 100
                     quality_courses.append((course_code, quality_score, info))
             
             # Sort by quality and get top 5
