@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button"
 import { motion } from "framer-motion"
 import { ArrowLeft, ExternalLink, FileText, Users, TrendingUp, Award } from "lucide-react"
 import Link from "next/link"
-import { useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
 
 interface AnalysisResults {
@@ -28,7 +27,6 @@ interface AnalysisResults {
 }
 
 export default function ResultsPage() {
-  const searchParams = useSearchParams()
   const [results, setResults] = useState<AnalysisResults | null>(null)
 
   useEffect(() => {
