@@ -46,6 +46,7 @@ class CourseRecommender:
             
             # If no valid courses with embeddings, fall back to smart filtering
             if not completed_embeddings:
+                print("⚠️ No embeddings found for completed courses, using fallback recommendations")
                 return self._fallback_recommendations(completed_courses)
             
             # Calculate user profile from completed courses
@@ -60,6 +61,8 @@ class CourseRecommender:
             
             # Smart filtering and scoring
             candidates = []
+            print(f"🔍 Analyzing {len(all_codes)} courses with embeddings...")
+            
             for i, course_code in enumerate(all_codes):
                 if course_code in valid_completed:
                     continue  # Skip already completed courses
@@ -69,26 +72,30 @@ class CourseRecommender:
                 easy_pct = info.get('easy_percentage') or 50
                 useful_pct = info.get('useful_percentage') or 50
                 
-                # Filter: Only recommend well-liked courses
-                if liked_pct < 70:
+                # More relaxed filtering for better recommendations
+                if liked_pct < 50:  # At least 50% liked (was 70%)
                     continue
                     
-                # Filter: Reasonable difficulty range
-                if not (60 <= easy_pct <= 100):
-                    continue
+                # No difficulty filtering - let users choose their own challenge level
                 
-                # Combine similarity with course quality metrics
+                # Combine similarity with course quality metrics (emphasize easiness!)
                 similarity_score = similarities[i]
-                quality_score = (liked_pct + useful_pct) / 200  # Normalize to 0-1
+                
+                # Quality score: 40% liked + 40% easiness + 20% usefulness
+                quality_score = (0.4 * liked_pct + 0.4 * easy_pct + 0.2 * useful_pct) / 100
                 
                 # Weighted final score
                 final_score = 0.7 * similarity_score + 0.3 * quality_score
                 
                 candidates.append((course_code, final_score, info))
             
+            print(f"✅ Found {len(candidates)} valid candidates after filtering")
+            
             # Sort by score and get top 5
             candidates.sort(key=lambda x: x[1], reverse=True)
             top_5 = candidates[:5]
+            
+            print(f"🎯 Returning top {len(top_5)} recommendations")
             
             # Format recommendations
             recommendations = []
@@ -119,9 +126,11 @@ class CourseRecommender:
             for course_code, info in self.course_info.items():
                 liked_pct = info.get('liked_percentage') or 0
                 useful_pct = info.get('useful_percentage') or 50
+                easy_pct = info.get('easy_percentage') or 50
                 
-                if liked_pct >= 75 and useful_pct >= 70:  # High quality threshold
-                    quality_score = (liked_pct + useful_pct) / 200
+                if liked_pct >= 50 and easy_pct >= 60:  # Focus on easiness in fallback too
+                    # Quality score: 40% liked + 50% easiness + 10% usefulness  
+                    quality_score = (0.4 * liked_pct + 0.5 * easy_pct + 0.1 * useful_pct) / 100
                     quality_courses.append((course_code, quality_score, info))
             
             # Sort by quality and get top 5
