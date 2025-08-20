@@ -13,10 +13,11 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins for production deployment
-    allow_credentials=False,  # Set to False when using allow_origins=["*"]
+    allow_origins=["*"],  # Allow all origins
+    allow_credentials=False,  # Required when using allow_origins=["*"]
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
+    expose_headers=["*"]
 )
 
 engine = CourseRecommender()
