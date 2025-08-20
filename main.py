@@ -55,11 +55,26 @@ async def recommend_from_courses(request: CourseRequest):
 
 @app.options("/upload-pdf")
 async def upload_pdf_options():
+    print("🔄 Received OPTIONS request for /upload-pdf")
     return {"message": "OK"}
+
+@app.get("/")
+async def root():
+    print("🏠 Root endpoint accessed")
+    return {"message": "FastAPI backend is running!", "status": "healthy"}
+
+@app.get("/health")
+async def health():
+    print("💚 Health check endpoint accessed")
+    return {"status": "healthy", "service": "FastAPI Backend"}
 
 @app.post("/upload-pdf")
 async def upload_pdf(file: UploadFile = File(...)):
+    print(f"📁 Received upload request - File: {file.filename}")
+    print(f"📝 Content type: {file.content_type}")
+    
     if not file.filename.endswith('.pdf'):
+        print("❌ Invalid file type - not PDF")
         return {"error": "File must be a PDF"}
     
     try:
@@ -125,4 +140,6 @@ async def upload_pdf(file: UploadFile = File(...)):
 if __name__ == "__main__":
     import os
     port = int(os.environ.get("PORT", 12000))
+    print(f"🚀 Starting FastAPI server on port {port}")
+    print(f"🔗 Visit /docs for API documentation")
     uvicorn.run(app, host="0.0.0.0", port=port)
