@@ -1,6 +1,7 @@
 import json
 from typing import List, Dict
 import random
+import numpy as np
 
 class CourseRecommender:
     def __init__(self, embeddings_file: str = 'embedded_courses.json'):
