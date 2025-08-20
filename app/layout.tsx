@@ -4,9 +4,14 @@ import { GeistMono } from 'geist/font/mono'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
-  generator: 'v0.app',
+  title: 'WATCourse | Data Driven Course Recommendations',
+  description: 'WATCourse | Data Driven Course Recommendations',
+  generator: 'WATCourse',
+  icons: {
+    icon: '/WC.png',
+    shortcut: '/WC.png',
+    apple: '/WC.png',
+  },
 }
 
 export default function RootLayout({
