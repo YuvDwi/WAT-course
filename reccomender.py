@@ -3,12 +3,23 @@ from typing import List, Dict
 import random
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
+from sentence_transformers import SentenceTransformer
 
 class CourseRecommender:
     def __init__(self, embeddings_file: str = 'embedded_courses.json'):
         with open(embeddings_file, 'r') as f:
             self.course_data = json.load(f)
         
+        # Try the SMALLEST possible model to avoid Railway timeout
+        try:
+            print("🤖 Loading tiny sentence transformer...")
+            self.model = SentenceTransformer('all-MiniLM-L12-v2')  # Smallest viable model
+            print("✅ Sentence transformer loaded!")
+            self.has_transformer = True
+        except Exception as e:
+            print(f"⚠️ Failed to load transformer: {e}")
+            self.has_transformer = False
+            self.model = None
         
         self.embeddings = {}
         self.course_info = {}
@@ -24,9 +35,23 @@ class CourseRecommender:
                 'reviews': data.get('reviews', [])
             }
             
-            # Store embeddings if available
+            # Store embeddings if available, or generate from description
             if 'embedding' in data and data['embedding']:
                 self.embeddings[course_code] = np.array(data['embedding'])
+            elif self.has_transformer and 'course_description' in data and data['course_description']:
+                # Generate embedding from description if transformer available
+                description = data['course_description']
+                embedding = self.model.encode(description)
+                self.embeddings[course_code] = np.array(embedding)
+                print(f"🔧 Generated embedding for {course_code}")
+    
+    def generate_text_embedding(self, text: str) -> np.ndarray:
+        """Generate embedding from any text if transformer is available"""
+        if self.has_transformer and self.model:
+            return np.array(self.model.encode(text))
+        else:
+            # Return zero vector if no transformer
+            return np.zeros(384)  # Standard embedding size
     
     def recommend_courses_json(self, request_json: str) -> str:
         try:
