@@ -3,17 +3,12 @@ from typing import List, Dict
 import random
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
-from sentence_transformers import SentenceTransformer
 
 class CourseRecommender:
     def __init__(self, embeddings_file: str = 'embedded_courses.json'):
         with open(embeddings_file, 'r') as f:
             self.course_data = json.load(f)
         
-        # Initialize sentence transformer for advanced embeddings
-        print("🤖 Loading SentenceTransformer model...")
-        self.model = SentenceTransformer('all-MiniLM-L6-v2')  # Fast, efficient model
-        print("✅ SentenceTransformer model loaded successfully!")
         
         self.embeddings = {}
         self.course_info = {}
@@ -29,20 +24,9 @@ class CourseRecommender:
                 'reviews': data.get('reviews', [])
             }
             
-            # Store embeddings if available, or generate them from course description
+            # Store embeddings if available
             if 'embedding' in data and data['embedding']:
                 self.embeddings[course_code] = np.array(data['embedding'])
-            elif 'course_description' in data and data['course_description']:
-                # Generate embedding from course description using SentenceTransformer
-                description = data['course_description']
-                embedding = self.model.encode(description)
-                self.embeddings[course_code] = np.array(embedding)
-                print(f"🔧 Generated embedding for {course_code} from description")
-    
-    def generate_interest_embedding(self, interests_text: str) -> np.ndarray:
-        """Generate embedding from user interests/preferences text"""
-        embedding = self.model.encode(interests_text)
-        return np.array(embedding)
     
     def recommend_courses_json(self, request_json: str) -> str:
         try:
