@@ -99,23 +99,10 @@ class CourseRecommender:
                 # Quality score: 40% liked + 30% easiness + 30% usefulness (balanced)
                 quality_score = (0.4 * liked_pct + 0.3 * easy_pct + 0.3 * useful_pct) / 100
                 
-                # Department bias: reduce emphasis on STEM courses
-                dept = course_code[:2] if len(course_code) >= 2 else course_code
-                stem_departments = {'CS', 'CE', 'EC', 'ME', 'CH', 'BM', 'NE', 'SY', 'CO', 'AM', 'MA', 'ST', 'PH', 'BI', 'SC', 'EA', 'MS', 'MT', 'CV', 'AF', 'AC'}
-                
-                # Apply department bias: favor STEM but allow non-STEM variety
-                if dept in stem_departments:
-                    dept_bias = 1.2  # Boost STEM course scores by 20%
-                    print(f"    📈 STEM boost applied to {course_code}: {final_score:.3f} → {final_score * dept_bias:.3f}")
-                else:
-                    dept_bias = 0.9  # Slight reduction for non-STEM but still competitive
-                    print(f"    📊 Non-STEM (competitive) applied to {course_code}: {final_score:.3f} → {final_score * dept_bias:.3f}")
-                
-                # Weighted final score with department bias
+                # Weighted final score
                 final_score = 0.7 * similarity_score + 0.3 * quality_score
-                biased_score = final_score * dept_bias
                 
-                candidates.append((course_code, biased_score, info))
+                candidates.append((course_code, final_score, info))
             
             print(f"✅ Found {len(candidates)} valid candidates after filtering")
             
@@ -128,17 +115,13 @@ class CourseRecommender:
             
             print(f"🌈 Applying diversity filtering...")
             
-            # First pass: prefer non-STEM departments for diversity
-            stem_departments = {'CS', 'CE', 'EC', 'ME', 'CH', 'BM', 'NE', 'SY', 'CO', 'AM', 'MA', 'ST', 'PH', 'BI', 'SC', 'EA', 'MS', 'MT', 'CV', 'AF', 'AC'}
-            
-            # Balanced diversity: STEM-focused but with variety
+            # First pass: get one course from each department
             for course_code, score, info in candidates:
-                dept = course_code[:2] if len(course_code) >= 2 else course_code
+                dept = course_code[:2] if len(course_code) >= 2 else course_code  # CS, MATH, etc.
                 if dept not in used_departments and len(diverse_recommendations) < 5:
                     diverse_recommendations.append((course_code, score, info))
                     used_departments.add(dept)
-                    stem_label = "[STEM]" if dept in stem_departments else "[NON-STEM]"
-                    print(f"  ✅ Added {course_code} (dept: {dept}) {stem_label}")
+                    print(f"  ✅ Added {course_code} (dept: {dept})")
             
             # Second pass: fill remaining slots if we don't have 5
             for course_code, score, info in candidates:
