@@ -6,17 +6,19 @@
   <p>Upload your transcript and get personalized course suggestions based on your academic strengths, interests, and comprehensive student review data.</p>
 </div>
 
-## 🚀 Features
+## Features
 
-- **📄 PDF Transcript Analysis**: Advanced parsing of academic transcripts using pdfminer.six
-- **🧠 Machine Learning Recommendations**: Vector embeddings and cosine similarity for intelligent course matching
-- **📊 Student Review Integration**: Natural language processing of UWFlow student reviews
-- **🎯 Personalized Scoring**: Balanced algorithm considering easiness, usefulness, and student satisfaction
-- **🌈 Department Diversity**: Ensures recommendations span different academic departments
-- **🔒 Privacy First**: No personal data stored, transcripts deleted after processing
-- **⚡ Real-time Results**: Sub-5 second analysis and recommendation generation
+WATCourse helps students discover their next courses by analyzing their academic history and matching it with comprehensive course data. Here's what it does:
 
-## 🏗️ Architecture
+- **PDF Transcript Analysis**: Parses academic transcripts using pdfminer.six to extract course codes and grades
+- **Machine Learning Recommendations**: Uses vector embeddings and cosine similarity to find courses that match your academic profile
+- **Student Review Integration**: Incorporates real student feedback from UWFlow using natural language processing
+- **Personalized Scoring**: Balances course similarity with practical factors like difficulty, usefulness, and student satisfaction
+- **Department Diversity**: Makes sure recommendations aren't all from the same department to encourage well-rounded exploration
+- **Privacy Focused**: Your transcript is processed and immediately deleted - no personal data is stored anywhere
+- **Fast Results**: Get recommendations in under 5 seconds
+
+## Architecture
 
 ### Frontend
 - **Next.js 14** with App Router
@@ -39,61 +41,29 @@
 - **Review Processing**: Extracted from UWFlow and processed with NLP
 - **Embedding Generation**: Local pre-computation for production efficiency
 
-## 🤖 How It Works
+## How It Works
+
+The recommendation process happens in several steps:
 
 ### 1. PDF Text Extraction
-```python
-from pdfminer.high_level import extract_text
-extracted_text = extract_text(pdf_file)
-```
-- Parses uploaded transcripts using pdfminer.six
-- Extracts course codes and grades using regex patterns
-- Identifies academic strengths and weaknesses
+First, we extract text from your uploaded transcript using pdfminer.six. This library is really good at pulling text out of PDFs while preserving the structure, which helps us find course codes and grades.
 
 ### 2. Course Recognition
-```python
-# Regex patterns for course detection
-course_codes = re.findall(r'^[A-Z]{2,5}$', text)
-course_numbers = re.findall(r'^\d+[A-Z]*$', text)
-```
-- Recognizes courses from 50+ academic departments
-- Maps completed courses to our database
-- Validates course code formats
+We use regex patterns to find course codes in the extracted text. The patterns look for things like "CS240" or "MATH135" - basically department codes followed by course numbers. This works across all University of Waterloo departments.
 
 ### 3. Vector Similarity Analysis
-```python
-# Cosine similarity calculation
-profile_embedding = np.mean(completed_embeddings, axis=0)
-similarities = cosine_similarity(profile_embedding, all_embeddings)
-```
-- Creates user profile from completed course embeddings
-- Computes similarity with all available courses
-- Uses pre-computed 384D sentence embeddings
+This is where the machine learning happens. Each course in our database has a 384-dimensional vector that represents its content and characteristics. We average the vectors of your completed courses to create your "academic profile", then find other courses with similar vectors using cosine similarity.
 
 ### 4. Smart Filtering & Scoring
-```python
-# Balanced scoring algorithm
-quality_score = (0.4 * liked_pct + 0.3 * easy_pct + 0.3 * useful_pct) / 100
-final_score = 0.7 * similarity_score + 0.3 * quality_score
+Raw similarity isn't everything - we also consider practical factors. The final score combines similarity (70%) with a quality score (30%) that factors in student satisfaction, course difficulty, and usefulness. The formula is:
 ```
-- Filters courses with minimum satisfaction thresholds
-- Balances content similarity with course quality metrics
-- Emphasizes student feedback and course difficulty
+quality_score = (0.4 * satisfaction + 0.3 * easiness + 0.3 * usefulness)
+```
 
 ### 5. Department Diversity
-```python
-# Two-pass selection for diversity
-for course in candidates:
-    dept = course[:2]
-    if dept not in used_departments:
-        recommendations.append(course)
-        used_departments.add(dept)
-```
-- Ensures recommendations span different departments
-- Promotes well-rounded academic exploration
-- Prevents over-concentration in single subjects
+Finally, we make sure recommendations aren't all from the same department. The algorithm does two passes - first picking the best course from each department, then filling remaining slots with the next best overall matches.
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 CoursePick/
@@ -114,45 +84,37 @@ CoursePick/
 └── requirements.txt      # Python dependencies
 ```
 
-## 🛠️ Installation & Setup
+## Installation & Setup
 
-### Prerequisites
-- Node.js 18+ 
-- Python 3.11+
-- Git
+You'll need Node.js 18+, Python 3.11+, and Git installed.
 
-### Frontend Setup
+### Running the Frontend
 ```bash
-# Clone the repository
 git clone https://github.com/YuvDwi/WAT-course.git
 cd WAT-course
-
-# Install dependencies
 npm install
-
-# Run development server
 npm run dev
 ```
 
-### Backend Setup
-```bash
-# Install Python dependencies
-pip install -r requirements.txt
+The frontend will be available at `localhost:3000`.
 
-# Run FastAPI server
+### Running the Backend
+```bash
+pip install -r requirements.txt
 python3 main.py
 ```
 
-### Environment Variables
-```bash
-# Frontend (.env.local)
-NEXT_PUBLIC_API_URL=https://your-railway-app.up.railway.app
+The API will start on `localhost:12000`.
 
-# Backend (Railway)
-# No additional environment variables required
+### Environment Variables
+For the frontend to connect to your backend, create a `.env.local` file:
+```bash
+NEXT_PUBLIC_API_URL=http://localhost:12000
 ```
 
-## 🚢 Deployment
+For production, point this to your deployed Railway app URL.
+
+## Deployment
 
 ### Frontend (Vercel)
 1. Connect GitHub repository to Vercel
@@ -171,7 +133,7 @@ NEXT_PUBLIC_API_URL=https://your-railway-app.up.railway.app
 - `start.sh`: Alternative startup script
 - `requirements.txt`: Python dependencies
 
-## 🔧 Development
+## Development
 
 ### Adding New Courses
 1. Update `embedded_coursesfinal.json` with course metadata
@@ -194,7 +156,7 @@ npm run dev
 # Test upload at localhost:3000
 ```
 
-## 📊 Technical Specifications
+## Technical Specifications
 
 | Component | Technology | Purpose |
 |-----------|------------|---------|
@@ -207,45 +169,43 @@ npm run dev
 | **Styling** | Tailwind CSS | Responsive design system |
 | **Deployment** | Railway + Vercel | Cloud hosting platforms |
 
-## 🎯 Performance Metrics
+## Performance & Scale
 
-- **Response Time**: < 5 seconds average
-- **Course Database**: 916 university courses
-- **Embedding Dimensions**: 384D sentence vectors
-- **Analysis Accuracy**: Content-based filtering with student feedback
-- **Department Coverage**: 50+ academic departments
+The system currently handles:
+- Response times under 5 seconds for most uploads
+- A database of 916 University of Waterloo courses
+- 384-dimensional embeddings for each course
+- Coverage across 50+ academic departments
+- Student review data from thousands of UWFlow submissions
 
-## 🤝 Contributing
+## Contributing
 
-We welcome contributions! Here's how to get started:
+I'd love help making this better! If you want to contribute:
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Make your changes
-4. Test thoroughly
-5. Commit your changes (`git commit -m 'Add amazing feature'`)
-6. Push to the branch (`git push origin feature/amazing-feature`)
-7. Open a Pull Request
+1. Fork the repo
+2. Make a new branch for your feature
+3. Make your changes and test them
+4. Commit with a clear message
+5. Push and open a pull request
 
-### Development Guidelines
-- Follow TypeScript best practices
-- Maintain Python code style with proper documentation
-- Test ML algorithm changes thoroughly
-- Ensure responsive design compatibility
-- Add appropriate error handling
+A few things to keep in mind:
+- Try to follow the existing code style
+- Test any ML changes carefully since they affect recommendations
+- Make sure everything works on mobile
+- Add error handling where it makes sense
 
-## 📝 License
+## License
 
 This project is open source and available under the [MIT License](LICENSE).
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - **UWFlow** for student review data
 - **University of Waterloo** for course information
 - **Sentence Transformers** for embedding models
 - **FastAPI** and **Next.js** communities for excellent frameworks
 
-## 📬 Contact
+## Contact
 
 - **GitHub**: [YuvDwi/WAT-course](https://github.com/YuvDwi/WAT-course)
 - **Demo**: [WATCourse Live App](https://your-vercel-app.vercel.app)
@@ -253,6 +213,6 @@ This project is open source and available under the [MIT License](LICENSE).
 ---
 
 <div align="center">
-  <p>Built with ❤️ for students, by students</p>
+  <p>Built for students, by students</p>
   <p>Making course selection smarter, one transcript at a time</p>
 </div>
