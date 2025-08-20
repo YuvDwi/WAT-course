@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 
-export default function Home() {
+export default function AboutPage() {
   return (
     <div className="min-h-screen bg-black/[0.96] antialiased bg-grid-white/[0.02]">
       {/* Header with results page styling */}
