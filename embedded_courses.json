@@ -1,0 +1,56 @@
+{
+  "CS240": {
+    "embedding": [0.1, 0.2, 0.3, 0.4, 0.5],
+    "url": "https://ucalendar.uwaterloo.ca/2425/COURSE/course-CS.html#CS240",
+    "useful_percentage": 85,
+    "easy_percentage": 65,
+    "liked_percentage": 80,
+    "course_description": "Data Structures and Data Management",
+    "reviews": ["Great course for learning algorithms", "Challenging but rewarding"]
+  },
+  "CS241": {
+    "embedding": [0.2, 0.3, 0.4, 0.5, 0.6],
+    "url": "https://ucalendar.uwaterloo.ca/2425/COURSE/course-CS.html#CS241", 
+    "useful_percentage": 82,
+    "easy_percentage": 55,
+    "liked_percentage": 75,
+    "course_description": "Foundations of Sequential Programs",
+    "reviews": ["Good foundation for systems programming", "Lots of work but worth it"]
+  },
+  "CS245": {
+    "embedding": [0.3, 0.4, 0.5, 0.6, 0.7],
+    "url": "https://ucalendar.uwaterloo.ca/2425/COURSE/course-CS.html#CS245",
+    "useful_percentage": 78,
+    "easy_percentage": 70,
+    "liked_percentage": 85,
+    "course_description": "Logic and Computation",
+    "reviews": ["Interesting theoretical course", "Prof makes it engaging"]
+  },
+  "MATH135": {
+    "embedding": [0.4, 0.5, 0.6, 0.7, 0.8],
+    "url": "https://ucalendar.uwaterloo.ca/2425/COURSE/course-MATH.html#MATH135",
+    "useful_percentage": 90,
+    "easy_percentage": 60,
+    "liked_percentage": 75,
+    "course_description": "Algebra for Honours Mathematics",
+    "reviews": ["Essential for math foundation", "Proof-heavy but important"]
+  },
+  "MATH136": {
+    "embedding": [0.5, 0.6, 0.7, 0.8, 0.9],
+    "url": "https://ucalendar.uwaterloo.ca/2425/COURSE/course-MATH.html#MATH136", 
+    "useful_percentage": 88,
+    "easy_percentage": 65,
+    "liked_percentage": 78,
+    "course_description": "Linear Algebra 1 for Honours Mathematics",
+    "reviews": ["Great introduction to linear algebra", "Very useful for CS"]
+  },
+  "STAT230": {
+    "embedding": [0.6, 0.7, 0.8, 0.9, 1.0],
+    "url": "https://ucalendar.uwaterloo.ca/2425/COURSE/course-STAT.html#STAT230",
+    "useful_percentage": 85,
+    "easy_percentage": 75,
+    "liked_percentage": 80,
+    "course_description": "Probability",
+    "reviews": ["Good intro to probability", "Applicable to many fields"]
+  }
+}
